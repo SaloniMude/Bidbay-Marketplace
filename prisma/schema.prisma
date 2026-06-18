@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  items    Item[] // A user can have many items
+  bids     Bid[]
+}
+
+model Item {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String
+  category     String
+  bidDuration  Int
+  imageUrl     String
+  startingCost Float 
+  createdAt    DateTime @default(now())
+
+  userId Int
+  user   User  @relation(fields: [userId], references: [id])
+  bids   Bid[]
+}
+
+model Bid {
+  id        Int      @id @default(autoincrement())
+  amount    Float // Matches SQLite Float type
+  createdAt DateTime @default(now())
+
+  // Relation linking the bid to the specific item being auctioned
+  itemId Int
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  // Relation linking the bid to the user who placed it
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
