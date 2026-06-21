@@ -138,7 +138,30 @@ const executeBidSubmit = () => {
             <div class="live-price-tag">₹{{ livePrice }}</div>
           </div>
 
-          <div class="bidding-form">
+          <div v-if="user && item.userId === user.id" class="owner-message-box">
+            <div class="owner-header">
+              <div class="owner-icon-wrapper">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <h4>Your Listing</h4>
+            </div>
+            <p>You are the registered owner of this auction. You cannot bid on your own item.</p>
+          </div>
+
+          <div v-else class="bidding-form">
             <label for="bidAmount" class="input-label">Place Counter Bid</label>
             <div class="input-wrapper">
               <span class="currency-marker">₹</span>
@@ -171,7 +194,6 @@ const executeBidSubmit = () => {
 </template>
 
 <style scoped>
-/* (Styles omitted for brevity, your CSS classes are perfectly configured) */
 .loading-state,
 .error-state {
   text-align: center;
@@ -364,5 +386,52 @@ const executeBidSubmit = () => {
 .list-enter-from {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+/* --- NEW OWNER MESSAGE STYLES --- */
+.owner-message-box {
+  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+  border: 1px solid #dbeafe;
+  border-left: 4px solid #2563eb; /* Matches your interactive blue theme */
+  padding: 22px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow:
+    0 4px 6px -1px rgba(37, 99, 235, 0.03),
+    0 2px 4px -1px rgba(37, 99, 235, 0.02);
+}
+
+.owner-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.owner-icon-wrapper {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.owner-message-box h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #1e40af;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  font-weight: 700;
+}
+
+.owner-message-box p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.6;
 }
 </style>

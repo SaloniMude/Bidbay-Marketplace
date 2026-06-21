@@ -28,6 +28,17 @@ export default defineWebSocketHandler({
         const item = await prisma.item.findUnique({ where: { id: itemId } });
         if (!item) return;
 
+        //prevent user from bidding on their own item
+        if (item.userId === userId) {
+          peer.send(
+            JSON.stringify({
+              type: 'ERROR',
+              message: 'You cannot place a bid on your own listing.',
+            })
+          );
+          return;
+        }
+
         // Check if auction is over
         const start = new Date(item.createdAt).getTime();
         const durationMs = item.bidDuration * 60 * 1000; // Match your duration unit (minutes vs hours)
