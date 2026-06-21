@@ -37,17 +37,21 @@ export async function registerMarketplaceItem(item) {
  */
 export async function deleteMarketplaceItem(itemId) {
   try {
-    // DELETE request to backend API endpoint
-    return await $fetch('/api/items/items', {
+    const response = await $fetch(`/api/items/${itemId}`, {
       method: 'DELETE',
-      query: { id: itemId },
     });
 
-    // Remove item from local state
-    const items = useMyItems();
-    items.value = items.value.filter((item) => item.id !== itemId);
+    // Remove item from local state if you use a global state composable
+    try {
+      const items = useMyItems();
+      if (items && items.value) {
+        items.value = items.value.filter((item) => item.id !== itemId);
+      }
+    } catch (stateError) {
+      console.error('Failed to update local state after deletion:', stateError);
+    }
 
-    return true;
+    return response;
   } catch (error) {
     console.error('Failed to delete item:', error);
     throw error;

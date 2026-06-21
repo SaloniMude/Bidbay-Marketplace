@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { UseElementSize } from '@vueuse/components';
 
+//reactive form fields for new item listing
 const name = ref('');
 const description = ref('');
 const category = ref('Electronics');
@@ -21,7 +22,6 @@ const handleSubmit = () => {
     bidDuration: totalBidDuration,
     imageUrl: imageUrl.value,
     startingCost: parseFloat(startingCost.value),
-    userId: 1,
   };
 
   // Send data to the parent page (i.e. my-items.vue) for processing and API submission

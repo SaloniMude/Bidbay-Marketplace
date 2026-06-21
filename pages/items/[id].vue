@@ -7,7 +7,7 @@ const itemId = route.params.id;
 // Connect to auth session
 const user = useCurrentUser();
 
-// 1. Fetch initial details of this single item from your backend
+// Fetch initial details of this single item from your backend
 const {
   data: itemData,
   pending,
@@ -26,8 +26,7 @@ let socket = null;
 
 watchEffect(() => {
   if (item.value) {
-    // 🎯 FIX 1: If item has previous bids, initialize the live price to the highest bid
-    // instead of resetting it back to the base starting cost!
+    // Initialize the live price with the current highest bid or starting cost
     if (item.value.bids && item.value.bids.length > 0) {
       livePrice.value = Number(item.value.bids[0].amount);
     } else {
@@ -36,7 +35,7 @@ watchEffect(() => {
 
     if (item.value.bids && liveBidsLog.value.length === 0) {
       liveBidsLog.value = item.value.bids.map((bid) => {
-        // Resilient fallback: use email prefix since database schema doesn't have usernames
+        // user-friendly display name logic for the activity log
         const finalName =
           bid.user?.username || (bid.user?.email ? bid.user.email.split('@')[0] : 'Anonymous');
 
@@ -49,7 +48,7 @@ watchEffect(() => {
   }
 });
 
-// 3. Connect real-time WebSockets engine upon layout render
+// Connect real-time WebSockets engine upon layout render
 onMounted(() => {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   socket = new WebSocket(`${protocol}//${window.location.host}/ws/bids`);
@@ -62,12 +61,11 @@ onMounted(() => {
     try {
       const message = JSON.parse(event.data);
 
-      // 🚀 THE REAL-TIME UPDATE INTERCEPTOR
       if (message.type === 'BID_UPDATED' && String(message.itemId) === String(itemId)) {
-        // A. Instantly update the master live price tag on screen
+        //  Instantly update the master live price tag on screen
         livePrice.value = Number(message.latestBid);
 
-        // B. Add a clean, descriptive activity log item to the top of the feed
+        // Add a clean, descriptive activity log item to the top of the feed
         liveBidsLog.value.unshift({
           id: Date.now(),
           text: `${message.bidderName} placed a bid of ₹${message.latestBid}`,
@@ -83,7 +81,7 @@ onBeforeUnmount(() => {
   if (socket) socket.close();
 });
 
-// 4. Send bid actions down the open WebSocket pipe
+//Send bid actions down the open WebSocket pipe
 const executeBidSubmit = () => {
   if (!user || !user.value) {
     alert('You must be logged in to place a bid.');
@@ -97,8 +95,6 @@ const executeBidSubmit = () => {
   }
 
   if (socket && socket.readyState === WebSocket.OPEN) {
-    // 🎯 FIX 2: Generate a beautiful visual display name from the active session email
-    // so WebSocket broadcasts don't default everyone to "Anonymous Bidder"
     const activeBidderName =
       user.value.username || (user.value.email ? user.value.email.split('@')[0] : 'Anonymous');
 
@@ -120,7 +116,7 @@ const executeBidSubmit = () => {
   <div class="auction-workspace">
     <div v-if="pending" class="loading-state">Syncing unique item record...</div>
     <div v-else-if="error || !item" class="error-state">
-      ⚠️ The requested listing item does not exist.
+      The requested listing item does not exist.
     </div>
 
     <div v-else class="auction-grid">

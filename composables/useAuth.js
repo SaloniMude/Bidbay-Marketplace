@@ -28,9 +28,8 @@ export const loginUser = async (email, password) => {
   return false;
 };
 
-/**
- * Clears user data and signs out the session
- */
+//Clears user data and signs out the session
+
 export async function logoutUser() {
   try {
     //destroy backend session (secure HTTP-only cookie)

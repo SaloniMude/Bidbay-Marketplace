@@ -4,7 +4,7 @@ import { registerMarketplaceItem, deleteMarketplaceItem } from '@/composables/us
 
 const headers = useRequestHeaders(['cookie']);
 
-// 🚀 Keep the configuration that fixed the network lifecycle sync
+// Fetch the current user's listed items from the API with authentication
 const { data: myItems, refresh } = await useFetch('/api/items/items', {
   query: { userItems: 'true' },
   headers,
@@ -49,6 +49,17 @@ const formatBidDuration = (duration) => {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+};
+
+// Helper function to check if the auction timeframe has cleared
+const isAuctionExpired = (item) => {
+  if (!item.createdAt || !item.bidDuration) return false;
+
+  const startTime = new Date(item.createdAt).getTime();
+  const durationMs = item.bidDuration * 60 * 1000; // Converts minutes to milliseconds
+  const expirationTime = startTime + durationMs;
+
+  return Date.now() > expirationTime;
 };
 </script>
 
@@ -114,6 +125,19 @@ const formatBidDuration = (duration) => {
             >
               {{ item.category }}
             </span>
+
+            <span
+              v-if="isAuctionExpired(item)"
+              class="absolute top-3 right-3 bg-red-600/95 backdrop-blur-sm text-white font-bold text-xs px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+            >
+              Sold
+            </span>
+            <span
+              v-else
+              class="absolute top-3 right-3 bg-emerald-600/95 backdrop-blur-sm text-white font-bold text-xs px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+            >
+              Active
+            </span>
           </div>
 
           <div class="p-5">
@@ -146,20 +170,24 @@ const formatBidDuration = (duration) => {
         <div
           class="bg-slate-50 px-5 py-3 border-t border-slate-100 flex items-center justify-between"
         >
-          <span class="inline-flex items-center text-xs font-semibold text-emerald-600">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-2"></span> Active
-            Auction
-          </span>
-          <div class="flex gap-2">
+          <div class="flex gap-3 items-center">
             <button class="text-xs text-slate-500 hover:text-violet-600 font-semibold transition">
               View Bids &rarr;
             </button>
+
             <button
+              v-if="!isAuctionExpired(item)"
               @click="handleDeleteItem(item.id)"
               class="text-xs text-red-600 hover:text-red-700 font-semibold transition hover:underline"
             >
               Delete
             </button>
+            <span
+              v-else
+              class="text-xs text-slate-400 font-medium italic bg-slate-200/60 px-2 py-0.5 rounded cursor-not-allowed select-none"
+            >
+              Locked (Sold)
+            </span>
           </div>
         </div>
       </div>

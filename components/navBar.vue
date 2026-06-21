@@ -1,6 +1,5 @@
 <script setup>
-// 1. Centralized list of your marketplace categories.
-// Make sure these match the exact casing/spelling stored in your Prisma database columns!
+// Centralized list of your marketplace categories.
 const categories = ref(['electronics', 'collectibles', 'furniture']);
 
 const currentUser = useCurrentUser();

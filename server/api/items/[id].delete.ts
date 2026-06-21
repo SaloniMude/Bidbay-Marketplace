@@ -1,4 +1,4 @@
-// server/api/items/[id].delete.ts
+// This API route handles the deletion of a listing item. It first ensures that all associated bids are removed to maintain database integrity, then proceeds to delete the item itself. The operation is wrapped in a transaction to guarantee that either both deletions succeed or neither does, preventing orphaned records and ensuring consistent state. Proper error handling is implemented to provide clear feedback on failure scenarios, such as invalid item IDs or database issues.
 import { prisma } from '~/server/utils/prisma';
 
 export default defineEventHandler(async (event) => {
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // 🎯 FIX: Execute sequential deletions inside a transaction
+    // 1. Use a transaction to ensure both deletions happen atomically
     const [deletedBids, deletedItem] = await prisma.$transaction([
       // 1. First, wipe out all real-time historical bids linked to this item
       prisma.bid.deleteMany({

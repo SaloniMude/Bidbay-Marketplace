@@ -1,20 +1,24 @@
+//basic dashboard layout with sidebar navigation for the user account area. The sidebar includes
+links to the "Sell Items" and "Bids Placed" sections, as well as a logout button. The main content
+area displays the nested routes for each section. The component also checks the current route on
+mount and redirects to the default "Sell Items" page if the user lands on the base dashboard path.
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed } from 'vue';
 
-const router = useRouter()
-const route = useRoute()
-const isSellRoute = computed(() => route.path.startsWith('/dashboard/sell'))
+const router = useRouter();
+const route = useRoute();
+const isSellRoute = computed(() => route.path.startsWith('/dashboard/sell'));
 
 onMounted(() => {
   if (route.path === '/dashboard') {
-    navigateTo('/dashboard/sell/my-items')
+    navigateTo('/dashboard/sell/my-items');
   }
-})
+});
 
 const handleLogout = () => {
-  logoutUser() //from useAuth.js, which clears the hardcoded user session
-  router.push('/')
-}
+  logoutUser(); //from useAuth.js, which clears the hardcoded user session
+  router.push('/');
+};
 </script>
 
 <template>
@@ -30,7 +34,11 @@ const handleLogout = () => {
           <NuxtLink
             to="/dashboard/sell/my-items"
             class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition"
-            :class="isSellRoute ? 'bg-violet-50 text-violet-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+            :class="
+              isSellRoute
+                ? 'bg-violet-50 text-violet-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            "
             active-class="bg-violet-50 text-violet-700 font-semibold"
             exact-active-class="bg-violet-50 text-violet-700 font-semibold"
           >
@@ -46,7 +54,7 @@ const handleLogout = () => {
           >
             <IconsBidsPlaced class="w-6 h-6 text-slate-500" />
             <span>Bids Placed</span>
-        </NuxtLink>
+          </NuxtLink>
         </nav>
       </div>
 
@@ -55,7 +63,7 @@ const handleLogout = () => {
           @click="handleLogout"
           class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition text-left cursor-pointer"
         >
-          <IconsLogout/>
+          <IconsLogout />
           <span>Logout</span>
         </button>
       </div>

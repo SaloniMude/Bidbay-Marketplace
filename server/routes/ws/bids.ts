@@ -1,10 +1,10 @@
-// server/routes/ws/bids.ts
+//websocket logic for live bidding
 
 import { prisma } from '~/server/utils/prisma';
 
 export default defineWebSocketHandler({
   open(peer) {
-    console.log(`🔌 WebSocket connected: ${peer.id}`);
+    console.log(` WebSocket connected: ${peer.id}`);
   },
   async message(peer, message) {
     try {
@@ -36,7 +36,7 @@ export default defineWebSocketHandler({
           return;
         }
 
-        // 🎯 FIX A: Save bid to DB so it immediately reflects on the user's dashboard
+        // Save bid to DB so it immediately reflects on the user's dashboard
         await prisma.bid.create({
           data: {
             amount: bidAmount,
@@ -45,7 +45,7 @@ export default defineWebSocketHandler({
           },
         });
 
-        // 🎯 FIX B: Update the item's current cost in the marketplace
+        // Update the item's current cost in the marketplace
         await prisma.item.update({
           where: { id: itemId },
           data: { startingCost: bidAmount },
@@ -61,14 +61,14 @@ export default defineWebSocketHandler({
 
         const roomName = `item-${String(itemId)}`;
 
-        // 🎯 CRITICAL FIX C: Force JSON stringification so other instances don't receive "[object Object]"
+        //  Force JSON stringification so other instances don't receive "[object Object]"
         peer.publish(roomName, JSON.stringify(updatePayload));
 
         // Echo back to the person who submitted the bid
         peer.send(JSON.stringify(updatePayload));
       }
     } catch (error) {
-      console.error('❌ WebSocket handler error:', error);
+      console.error(' WebSocket handler error:', error);
     }
   },
   close(peer) {

@@ -1,3 +1,6 @@
+// This component represents an individual item card in the category page loop. It receives item
+data as a prop and displays the image, name, category, description, and starting bid. It also
+includes a link to the individual item bidding page.
 <script setup>
 // Define the item prop coming from your category page loop
 const props = defineProps({

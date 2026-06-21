@@ -1,10 +1,13 @@
+//chooses what to display based on the category in the URL, and fetches all items that match that
+category from the API. It also handles loading and error states, and displays the items in a grid
+using the ItemCard component.
 <script setup>
 const route = useRoute();
 
-// 1. Automatically grab the current category from the URL string
+// Automatically grab the current category from the URL string
 const categoryName = computed(() => route.params.name);
 
-// 2. Fetch all matching listings from your single items API file
+// Fetch all matching listings from your single items API file
 const {
   data: items,
   pending,
